@@ -21,10 +21,17 @@ using std::endl;
 
 
 void BRFinalAna(){
+
+	TString infile = "infiles/Final.root";
+
+
 	gStyle->SetOptStat(0);
 	TCanvas * c = new TCanvas("c","c",600,600);
 	c->cd();
 
+
+	float Value;
+	float ValueError;
 
 	const int NHFQA = 9;
 	int QAVtxPDGID[NHFQA] = {411,421,431,4122,511,521,531,443,553};
@@ -33,6 +40,20 @@ void BRFinalAna(){
 
 	float PDGcTau[NHFQA] = {1.040,0.4101,0.500,0.200,1.519,1.638,1.515,7.2/1000000000,1.21/100000000};
 	float PDGcTauErr[NHFQA] = {0.007,0.0015,0.007,0.006,0.004,0.004,0.004,0.1/1000000000.1/100000000};
+
+	const int NChannels = 10;
+
+	TString DecayChannelLabels[NHFQA][NChannels] = {{"#pi^{0}#pi^{+}","#pi^{+}#pi^{-}#pi^{+}","#pi^{+}#pi^{0}K^{0}_{S}","#pi^{+}#pi^{+}K^{-}","#pi^{+}#pi^{+}#pi^{+}#pi^{-}#pi^{-}","#pi^{+}#phi","#mu^{+}#nu_{#mu}","K^{+}K^{0}_{S}","e^{+}X","#phiX"}, //D+
+		{"#pi^{+}K^{-}","#pi^{+}#pi^{0}K^{-}","#pi^{-}K^{+}","K^{+}K^{-}K^{0}_{S}","3K^{0}_{S}","2#pi^{0}","#pi^{+}#pi^{-}","K^{0}_{S}X","#pi^{0}X","e^{+}X"}, //D0
+		{"#mu^{+}#nu_{#mu}#phi","#mu^{+}#nu_{#mu}","#pi^{+}K^{+}K^{-}","K^{+}K^{0}_{S}","2pi^{0}#pi^{+}","p #bar p","#pi^{+}#phi","K^{0}_{S}X","#phiX","e^{+}X"}, //Ds
+		{"pK^{-}#pi^{+}","pK^{0}_{S}","p#phi","p#pi^{0}#pi^{+}K^{-}","p#pi^{+}#pi^{-}#bar K^{0}","p#pi^{+}#pi^{-}#pi^{+}#pi^{-}","p#pi^{+}#pi^{-}","K^{+}K^{0}_{S}","e^{+}X","#phiX"}, //Lambda_C
+		{"K^{+}K^{-}#pi^{+}","K^{+}K^{-}K^{+}","K^{+}#phi","#K^{+}J/#psi","K^{+} #bar D","D_{s}^{+} #bar D","K^{+}#bar K^{*0}(1430)","e #nu_{e} X","DX","J/#psiX"},  //B+
+		{"#pi^{-}K^{+}","#pi^{-}K^{+}#pi^{0}","#pi^{+}#pi^{-}","2#pi^{0}","D^{-}#pi^{+}","D^{-}D_{s}^{+}","J/#psiK^{+}#pi^{-}","J/#psi#pi^{+}#pi^{-}","DX","J/#psiX"}, //B0
+		{"#pi^{+}K^{-}","K^{+}K^{-}","p#bar pK^{+}K^{-}","#phi#gamma","D^{-} #pi^{+}","D_{s}^{+}D_{s}^{-}","J/#psiK^{+}K^{-}","J/#psi#phi","D_{s}^{-}X","J/#psiX"},  //Bs
+		{"e^{+}e^{-}","#mu^{+}#mu^{-}","#pi^{+}#pi^{-}","#pi^{+}#pi^{-}#pi^{0}","K^{+}K^{-}","K^{+}K^{-}#pi^{+}#pi^{-}","p #bar p","n #bar n","3#gamma","#gamma #pi^{0}"},  //Jpsi
+		{"e^{+}e^{-}","#mu^{+}#mu^{-}","#gamma#pi^{+}#pi^{-}","#pi^{+}#pi^{-}#pi^{0}","#gamma K^{+}K^{-}","#gamma2#pi^{0}","#phiK^{+}K^{-}","#pi^{+}#pi^{-}2pi^{0}","#gamma#pi^{+}#pi^{-}p #bar p","J/#psiX"}};  //Upsilon(1S)
+
+
 
 	float Light = 2.9979 * 100000000;
 	float unit = 1.0/1000000;
@@ -45,9 +66,9 @@ void BRFinalAna(){
 
 	const int NChannel = 10; 
 
-	TString infile = "infiles/ReallyNew.root";
 	TFile * fin = new TFile(infile.Data());
 	TH1D * HFHadronStat = (TH1D *) fin->Get("HFHadronStat");
+	//HFHadronStat->SetCanExtend(TH1::kAllAxes);	
 
 
 	TH1D * BR1DHis[NHFQA];
@@ -66,7 +87,7 @@ void BRFinalAna(){
 	TH1D * LifeTime[NHFQA];
 	TF1 * func[NHFQA];
 
-		
+
 	TLegend * leg[NHFQA]; 
 	TLegend * leg2[NHFQA]; 
 	TLegend * leg3[NHFQA]; 
@@ -80,8 +101,9 @@ void BRFinalAna(){
 	TH1D * QACosTheta[NHFQA];
 
 
+
 	for(int i = 0; i < NHFQA; i++){
-		
+
 		cout << "i = " << i << endl;
 
 
@@ -92,7 +114,7 @@ void BRFinalAna(){
 		LifeTime[i]->GetYaxis()->CenterTitle();
 		LifeTime[i]->GetXaxis()->SetTitleOffset(1.2);
 		LifeTime[i]->GetYaxis()->SetTitleOffset(1.4);
-	//	LifeTime[i]->GetYaxis()->SetTitleSize(0.14);
+		//	LifeTime[i]->GetYaxis()->SetTitleSize(0.14);
 
 		LifeTime[i]->SetMarkerStyle(20);
 		LifeTime[i]->SetMarkerSize(1);		
@@ -149,7 +171,7 @@ void BRFinalAna(){
 		QAPy[i]->SetMarkerColor(kBlack);
 		QAPy[i]->SetMinimum(0);
 
-		
+
 
 		//QA Pz
 		QACosTheta[i] = (TH1D *) fin->Get(Form("QACosTheta_%d",i));
@@ -226,7 +248,7 @@ void BRFinalAna(){
 
 
 
-
+		
 
 
 
@@ -251,9 +273,8 @@ void BRFinalAna(){
 
 
 
-
 		Diff[i] = new TH1D(Form("Diff_%d",i),"",NChannel,-0.5,NChannel-0.5);
-		Diff[i]->GetXaxis()->SetTitle(Form("%s Channel ID",HFName[i].Data()));
+		//Diff[i]->GetXaxis()->SetTitle(Form("%s Channel ID",HFName[i].Data()));
 		Diff[i]->GetYaxis()->SetTitle("Dev From PDG");
 		Diff[i]->GetXaxis()->CenterTitle();
 		Diff[i]->GetYaxis()->CenterTitle();
@@ -280,7 +301,7 @@ void BRFinalAna(){
 
 
 		Diff2[i] = new TH1D(Form("Diff2_%d",i),"",NChannel,-0.5,NChannel-0.5);
-		Diff2[i]->GetXaxis()->SetTitle(Form("%s Channel ID",HFName[i].Data()));
+		//Diff2[i]->GetXaxis()->SetTitle(Form("%s Channel ID",HFName[i].Data()));
 		Diff2[i]->GetYaxis()->SetTitle("Dev From Decay Table");
 		Diff2[i]->GetXaxis()->CenterTitle();
 		Diff2[i]->GetYaxis()->CenterTitle();
@@ -307,7 +328,7 @@ void BRFinalAna(){
 
 
 		Diff3[i] = new TH1D(Form("Diff3_%d",i),"",NChannel,-0.5,NChannel-0.5);
-		Diff3[i]->GetXaxis()->SetTitle(Form("%s Channel ID",HFName[i].Data()));
+		//Diff3[i]->GetXaxis()->SetTitle(Form("%s Channel ID",HFName[i].Data()));
 		Diff3[i]->GetYaxis()->SetTitle("Dev From PDG");
 		Diff3[i]->GetXaxis()->CenterTitle();
 		Diff3[i]->GetYaxis()->CenterTitle();
@@ -328,6 +349,94 @@ void BRFinalAna(){
 		Diff3[i]->SetMaximum(1.6);
 		Diff3[i]->SetMinimum(-1.6);
 
+
+		//Redefintion of Axis//
+		for(int r = 0; r < NChannels; r++){
+
+			Value = EvtGenBR[i]->GetBinContent(r+1);
+			ValueError = EvtGenBR[i]->GetBinError(r+1);
+	
+			EvtGenBR[i]->Fill(DecayChannelLabels[i][r],Value);
+			EvtGenBR[i]->SetBinContent(r+1,Value);
+			EvtGenBR[i]->SetBinError(r+1,ValueError);
+
+			Value = EvtGenEncoded[i]->GetBinContent(r+1);
+			ValueError = EvtGenEncoded[i]->GetBinError(r+1);
+		
+			EvtGenEncoded[i]->Fill(DecayChannelLabels[i][r],Value);
+			EvtGenEncoded[i]->SetBinContent(r+1,Value);
+			EvtGenEncoded[i]->SetBinError(r+1,ValueError);
+
+
+			Value = PDGBR[i]->GetBinContent(r+1);
+			ValueError = PDGBR[i]->GetBinError(r+1);
+		
+			PDGBR[i]->Fill(DecayChannelLabels[i][r],Value);
+			PDGBR[i]->SetBinContent(r+1,Value);
+			PDGBR[i]->SetBinError(r+1,ValueError);
+
+	
+
+			Value = Diff[i]->GetBinContent(r+1);
+			ValueError = Diff[i]->GetBinError(r+1);
+		
+			Diff[i]->Fill(DecayChannelLabels[i][r],Value);
+			Diff[i]->SetBinContent(r+1,Value);
+			Diff[i]->SetBinError(r+1,ValueError);
+
+			Value = Diff2[i]->GetBinContent(r+1);
+			ValueError = Diff2[i]->GetBinError(r+1);
+		
+			Diff2[i]->Fill(DecayChannelLabels[i][r],Value);
+			Diff2[i]->SetBinContent(r+1,Value);
+			Diff2[i]->SetBinError(r+1,ValueError);
+
+
+			Value = Diff3[i]->GetBinContent(r+1);
+			ValueError = Diff3[i]->GetBinError(r+1);
+		
+			Diff3[i]->Fill(DecayChannelLabels[i][r],Value);
+			Diff3[i]->SetBinContent(r+1,Value);
+			Diff3[i]->SetBinError(r+1,ValueError);
+
+
+			EvtGenBR[i]->GetYaxis()->SetTitle("Branching Ratio");
+			EvtGenBR[i]->GetYaxis()->CenterTitle();
+			EvtGenBR[i]->GetXaxis()->SetLabelSize(0.08);
+			EvtGenBR[i]->GetXaxis()->SetLabelOffset(HFHadronStat->GetXaxis()->GetLabelOffset() * 3.2);
+
+			EvtGenEncoded[i]->GetYaxis()->SetTitle("Branching Ratio");
+			EvtGenEncoded[i]->GetYaxis()->CenterTitle();
+			EvtGenEncoded[i]->GetXaxis()->SetLabelSize(0.08);
+			EvtGenEncoded[i]->GetXaxis()->SetLabelOffset(HFHadronStat->GetXaxis()->GetLabelOffset() * 3.2);
+
+
+			PDGBR[i]->GetYaxis()->SetTitle("Branching Ratio");
+			PDGBR[i]->GetYaxis()->CenterTitle();
+			PDGBR[i]->GetXaxis()->SetLabelSize(0.08);
+			PDGBR[i]->GetXaxis()->SetLabelOffset(HFHadronStat->GetXaxis()->GetLabelOffset() * 3.2);
+
+
+
+			Diff[i]->GetYaxis()->SetTitle("Dev From PDG");
+			Diff[i]->GetYaxis()->CenterTitle();
+			Diff[i]->GetXaxis()->SetLabelSize(0.20);
+			Diff[i]->GetXaxis()->SetLabelOffset(HFHadronStat->GetXaxis()->GetLabelOffset() * 6.2);
+
+			Diff2[i]->GetYaxis()->SetTitle("Dev From Decay Table");
+			Diff2[i]->GetYaxis()->CenterTitle();
+			Diff2[i]->GetXaxis()->SetLabelSize(0.20);
+			Diff2[i]->GetXaxis()->SetLabelOffset(HFHadronStat->GetXaxis()->GetLabelOffset() * 6.2);
+
+
+			Diff3[i]->GetYaxis()->SetTitle("Dev From PDG");
+			Diff3[i]->GetYaxis()->CenterTitle();
+			Diff3[i]->GetXaxis()->SetLabelSize(0.20);
+			Diff3[i]->GetXaxis()->SetLabelOffset(HFHadronStat->GetXaxis()->GetLabelOffset() * 6.2);
+
+
+
+		}
 
 
 
@@ -399,11 +508,11 @@ void BRFinalAna(){
 		   4. Decay B0 -> D- pi+
 		   5. Decay B0 -> D- Ds+ 
 		   6. Decay B0 -> Jpsi K+ pi-
-			7. Decay B0 -> Jpsi pi+ pi-
-			8. Decay B0 -> D + X
-			9. Decay B0 -> Jpsi + X 
+		   7. Decay B0 -> Jpsi pi+ pi-
+		   8. Decay B0 -> D + X
+		   9. Decay B0 -> Jpsi + X 
 
-			B+
+		B+
 
 			0. Decay B+ -> K+ K- pi+ with all intermediate resonances 
 			1. Decay B+ -> K+ K- K+ with all intermediate resonances 
@@ -448,16 +557,16 @@ void BRFinalAna(){
 
 			Upsilon(1S)
 
-			   0. Decay Upsilon -> e+ e- 
-			   1. Decay Upsilon -> mu+ mu-
-			   2. Decay Upsilon -> gamma pi+ pi-
-			   3. Decay Upsilon -> pi+ pi- pi0
-			   4. Decay Upsilon -> gamma K+ K-
-			   5. Decay Upsilon -> gamma pi0 pi0	
-			   6. Decay Upsilon -> phi K+ K-
-			   7. Decay Upsilon -> pi+ pi- pi0	pi0
-			   8. Decay Upsilon -> gamma pi+ pi- p+ p-
-			   9. Decay Upsilon -> Jpsi + X
+			0. Decay Upsilon -> e+ e- 
+			1. Decay Upsilon -> mu+ mu-
+			2. Decay Upsilon -> gamma pi+ pi-
+			3. Decay Upsilon -> pi+ pi- pi0
+			4. Decay Upsilon -> gamma K+ K-
+			5. Decay Upsilon -> gamma pi0 pi0	
+			6. Decay Upsilon -> phi K+ K-
+			7. Decay Upsilon -> pi+ pi- pi0	pi0
+			8. Decay Upsilon -> gamma pi+ pi- p+ p-
+			9. Decay Upsilon -> Jpsi + X
 
 
 			*/
@@ -488,19 +597,19 @@ void BRFinalAna(){
 
 
 */
-		cout << "Pass 1" << endl;
+			cout << "Pass 1" << endl;
 
 
-			float PDGValue[NHFQA][NChannel] = {{0.001247,0.00327,0.0736,0.0938,0.00570,0.00166,3.74e-04,0.00304,0.1607,0.0112},    //D+
-				{0.03947,0.0164,0.000150,0.00442,7.5e-04,8.26e-04,0.00515,0.3,0.2,0.0649},  //D0 
-				{0.019,0.00543,0.0538,0.01453,0.0168,0.00122,0.045,0.190,0.157,0.0633},  //Ds
-				{0.0628,0.0159,0.00106,0.000111,0.00010,0.0182,0.00461,0.099,0.50,0.0395},   //LambdaC+
-				{1.96e-05,3.78e-05,5.12e-06,1.59e-06,2.51e-03,7.2e-03,1.15e-03,4.00e-05,1.027,0.0192},   //B0
-				{5.2e-06,4.88e-05,8.8e-06,0.00102,3.69e-04,0.009,3.8e-07,0.108,0.95,0.01}, //B+ 
-				{2.2e-06,2.66e-05,1.85e-05,3.4e-05,2.98e-03,4.4e-03,7.9e-04,1.04e-03,0.62,0.0192},   //Bs
-				{0.05971,0.05961,1.47e-04,0.0210,2.88e-03,6.86e-03,2.120e-03,2.09e-03,1.16e-05,3.56e-05},   //Jpsi
-				{0.0238,0.0248,6.3e-05,2.1e-06,1.14e-05,1.7e-05,2.4e-06,1.28e-05,1.5e-04,5.4e-04}    //Upsilon(1S)
-			};  
+		float PDGValue[NHFQA][NChannel] = {{0.001247,0.00327,0.0736,0.0938,0.00570,0.00166,3.74e-04,0.00304,0.1607,0.0112},    //D+
+			{0.03947,0.0164,0.000150,0.00442,7.5e-04,8.26e-04,0.00515,0.3,0.2,0.0649},  //D0 
+			{0.019,0.00543,0.0538,0.01453,0.0168,0.00122,0.045,0.190,0.157,0.0633},  //Ds
+			{0.0628,0.0159,0.00106,0.000111,0.00010,0.0182,0.00461,0.099,0.50,0.0395},   //LambdaC+
+			{1.96e-05,3.78e-05,5.12e-06,1.59e-06,2.51e-03,7.2e-03,1.15e-03,4.00e-05,1.027,0.0192},   //B0
+			{5.2e-06,4.88e-05,8.8e-06,0.00102,3.69e-04,0.009,3.8e-07,0.108,0.95,0.01}, //B+ 
+			{2.2e-06,2.66e-05,1.85e-05,3.4e-05,2.98e-03,4.4e-03,7.9e-04,1.04e-03,0.62,0.0192},   //Bs
+			{0.05971,0.05961,1.47e-04,0.0210,2.88e-03,6.86e-03,2.120e-03,2.09e-03,1.16e-05,3.56e-05},   //Jpsi
+			{0.0238,0.0248,6.3e-05,2.1e-06,1.14e-05,1.7e-05,2.4e-06,1.28e-05,1.5e-04,5.4e-04}    //Upsilon(1S)
+		};  
 
 
 		float PDGValueErr[NHFQA][NChannel] = {
@@ -515,22 +624,22 @@ void BRFinalAna(){
 			{0.0011,0.0005,1.8e-05,0.8e-06,0.13e-05,0.7e-05,0.5e-06,0.30e-05,0.6e-04,0.4e-04}     //Upsilon(1S)
 		}; 
 
-/*
+		/*
 
-			Upsilon(1S)
+		   Upsilon(1S)
 
 
-			   0. Decay Upsilon -> e+ e- 
-			   1. Decay Upsilon -> mu+ mu-
-			   2. Decay Upsilon -> gamma pi+ pi-
-			   3. Decay Upsilon -> pi+ pi- pi0
-			   4. Decay Upsilon -> gamma K+ K-
-			   5. Decay Upsilon -> gamma pi0 pi0	
-			   6. Decay Upsilon -> phi K+ K-
-			   7. Decay Upsilon -> pi+ pi- pi0	pi0
-			   8. Decay Upsilon -> gamma pi+ pi- p+ p-
-			   9. Decay Upsilon -> Jpsi + X
-*/
+		   0. Decay Upsilon -> e+ e- 
+		   1. Decay Upsilon -> mu+ mu-
+		   2. Decay Upsilon -> gamma pi+ pi-
+		   3. Decay Upsilon -> pi+ pi- pi0
+		   4. Decay Upsilon -> gamma K+ K-
+		   5. Decay Upsilon -> gamma pi0 pi0	
+		   6. Decay Upsilon -> phi K+ K-
+		   7. Decay Upsilon -> pi+ pi- pi0	pi0
+		   8. Decay Upsilon -> gamma pi+ pi- p+ p-
+		   9. Decay Upsilon -> Jpsi + X
+		   */
 
 
 		float EncodedValue[NHFQA][NChannel] = {{0.00126,0.00244,0.0699,0.09400,0.001660,0.004660214,0.000382,0.00286,0.16313194,0.027660214},   //D+
@@ -547,18 +656,18 @@ void BRFinalAna(){
 
 
 
-		
+
 		for(int j = 0; j < NChannel; j++){
 
-				PDGBR[i]->SetBinContent(j+1,PDGValue[i][j]);
-				PDGBR[i]->SetBinError(j+1,PDGValueErr[i][j]);
+			PDGBR[i]->SetBinContent(j+1,PDGValue[i][j]);
+			PDGBR[i]->SetBinError(j+1,PDGValueErr[i][j]);
 
-				EvtGenEncoded[i]->SetBinContent(j+1,EncodedValue[i][j]);
-				EvtGenEncoded[i]->SetBinError(j+1,EncodedValue[i][j] * 0.01);
+			EvtGenEncoded[i]->SetBinContent(j+1,EncodedValue[i][j]);
+			EvtGenEncoded[i]->SetBinError(j+1,EncodedValue[i][j] * 0.01);
 
-		
+
 		}
-		
+
 
 
 
@@ -817,7 +926,7 @@ void BRFinalAna(){
 
 		LifeTime[i]->Fit(func[i],"R");
 		LifeTime[i]->Draw("ep");
-	
+
 		leg4[i] = new TLegend(0.12,0.60,0.50,0.75,NULL,"brNDC");
 		leg4[i]->SetBorderSize(0);
 		leg4[i]->SetTextSize(0.045);
@@ -841,14 +950,16 @@ void BRFinalAna(){
 		c->SaveAs(Form("Plots/%s/LifeTime.png",HFNameSave[i].Data()));
 
 		QAE[i]->Draw("ep");
+		float EnergyRMS = QAE[i]->GetRMS();
 
 		lat->SetTextSize(0.1);			
 		lat->DrawLatex(0.15,0.78,HFName[i].Data());
 		lat->SetTextSize(0.038);			
 		lat->DrawLatex(0.32,0.78,Form("Total Statistics: %d",TotalEvents[i]));
+		lat->DrawLatex(0.32,0.70,Form("RMS: %.3f",EnergyRMS));
 
 		c->SaveAs(Form("Plots/%s/Energy.png",HFNameSave[i].Data()));
-	
+			
 		QAPx[i]->Draw("ep");
 
 		lat->SetTextSize(0.1);			
@@ -887,6 +998,49 @@ void BRFinalAna(){
 		c->SaveAs(Form("Plots/%s/CosTheta.png",HFNameSave[i].Data()));
 
 
+
 	}
 
+
+
+	//Redefintion of Axis//
+	for(int r = 0; r < NHFQA; r++){
+
+		Value = HFHadronStat->GetBinContent(r+1);
+		ValueError = HFHadronStat->GetBinError(r+1);
+		
+		HFHadronStat->Fill(HFName[r],Value);
+		HFHadronStat->SetBinContent(r+1,Value);
+		HFHadronStat->SetBinError(r+1,ValueError);
+
+
+	}
+
+	c->cd();
+	c->SetLeftMargin(0.15);
+
+	HFHadronStat->GetYaxis()->SetTitle("Counts");
+	HFHadronStat->GetYaxis()->CenterTitle();
+	HFHadronStat->GetXaxis()->SetLabelSize(0.08);
+	HFHadronStat->GetXaxis()->SetLabelOffset(HFHadronStat->GetXaxis()->GetLabelOffset() * 3.2);
+
+	HFHadronStat->Draw("ep");
+	//HFHadronStat->Draw("text");
+	c->SaveAs("Plots/All/HFHadronStat.png");
+
+	TH1D * HFEWidth = (TH1D *) HFHadronStat->Clone("HFEWidth");
+
+	HFEWidth->GetYaxis()->SetTitle("Daughter Energy Percent Deviation (%)");
+	HFEWidth->GetYaxis()->CenterTitle();
+
+	for(int i = 0; i < NHFQA; i++){
+
+		float ERMSValue = QAE[i]->GetRMS()* 100;
+
+		HFEWidth->SetBinContent(i+1, ERMSValue);
+			
+	}
+
+	HFEWidth->Draw("hist");
+	c->SaveAs("Plots/All/HFEWidth.png");
 }
