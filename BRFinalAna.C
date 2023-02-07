@@ -22,7 +22,13 @@ using std::endl;
 
 void BRFinalAna(){
 
-	TString infile = "infiles/Final.root";
+
+	TLatex *lat = new TLatex();
+	lat->SetNDC();
+	lat->SetTextSize(0.1);
+
+
+	TString infile = "infiles/Charm.root";
 
 
 	gStyle->SetOptStat(0);
@@ -47,7 +53,7 @@ void BRFinalAna(){
 		{"#pi^{+}K^{-}","#pi^{+}#pi^{0}K^{-}","#pi^{-}K^{+}","K^{+}K^{-}K^{0}_{S}","3K^{0}_{S}","2#pi^{0}","#pi^{+}#pi^{-}","K^{0}_{S}X","#pi^{0}X","e^{+}X"}, //D0
 		{"#mu^{+}#nu_{#mu}#phi","#mu^{+}#nu_{#mu}","#pi^{+}K^{+}K^{-}","K^{+}K^{0}_{S}","2pi^{0}#pi^{+}","p #bar p","#pi^{+}#phi","K^{0}_{S}X","#phiX","e^{+}X"}, //Ds
 		{"pK^{-}#pi^{+}","pK^{0}_{S}","p#phi","p#pi^{0}#pi^{+}K^{-}","p#pi^{+}#pi^{-}#bar K^{0}","p#pi^{+}#pi^{-}#pi^{+}#pi^{-}","p#pi^{+}#pi^{-}","K^{+}K^{0}_{S}","e^{+}X","#phiX"}, //Lambda_C
-		{"K^{+}K^{-}#pi^{+}","K^{+}K^{-}K^{+}","K^{+}#phi","#K^{+}J/#psi","K^{+} #bar D","D_{s}^{+} #bar D","K^{+}#bar K^{*0}(1430)","e #nu_{e} X","DX","J/#psiX"},  //B+
+		{"K^{+}K^{-}#pi^{+}","K^{+}K^{-}K^{+}","K^{+}#phi","K^{+}J/#psi","K^{+} #bar D","D_{s}^{+} #bar D","K^{+}#bar K^{*0}(1430)","e #nu_{e} X","DX","J/#psiX"},  //B+
 		{"#pi^{-}K^{+}","#pi^{-}K^{+}#pi^{0}","#pi^{+}#pi^{-}","2#pi^{0}","D^{-}#pi^{+}","D^{-}D_{s}^{+}","J/#psiK^{+}#pi^{-}","J/#psi#pi^{+}#pi^{-}","DX","J/#psiX"}, //B0
 		{"#pi^{+}K^{-}","K^{+}K^{-}","p#bar pK^{+}K^{-}","#phi#gamma","D^{-} #pi^{+}","D_{s}^{+}D_{s}^{-}","J/#psiK^{+}K^{-}","J/#psi#phi","D_{s}^{-}X","J/#psiX"},  //Bs
 		{"e^{+}e^{-}","#mu^{+}#mu^{-}","#pi^{+}#pi^{-}","#pi^{+}#pi^{-}#pi^{0}","K^{+}K^{-}","K^{+}K^{-}#pi^{+}#pi^{-}","p #bar p","n #bar n","3#gamma","#gamma #pi^{0}"},  //Jpsi
@@ -69,6 +75,7 @@ void BRFinalAna(){
 	TFile * fin = new TFile(infile.Data());
 	TH1D * HFHadronStat = (TH1D *) fin->Get("HFHadronStat");
 	//HFHadronStat->SetCanExtend(TH1::kAllAxes);	
+	TH1D * HFAntiHadronStat = (TH1D *) fin->Get("HFAntiHadronStat");
 
 
 	TH1D * BR1DHis[NHFQA];
@@ -94,6 +101,7 @@ void BRFinalAna(){
 	TLegend * leg4[NHFQA]; 
 
 
+	TH1D * QAMass[NHFQA];
 	TH1D * QAE[NHFQA];
 	TH1D * QAPx[NHFQA];
 	TH1D * QAPy[NHFQA];
@@ -121,9 +129,24 @@ void BRFinalAna(){
 		LifeTime[i]->SetLineColor(kBlack);
 		LifeTime[i]->SetMarkerColor(kBlack);
 
-		LifeTime[i]->SetMaximum(200000);
+		LifeTime[i]->SetMaximum(LifeTime[i]->GetMaximum() * 1.5);
 		LifeTime[i]->SetMinimum(0);
 
+
+		//QA Mass
+		QAMass[i] = (TH1D *) fin->Get(Form("InvMass_%d",i));
+		QAMass[i]->GetXaxis()->SetTitle(Form("%s Daughters Invariant Mass (GeV/c^{2})",HFName[i].Data()));		
+		QAMass[i]->GetYaxis()->SetTitle("Number of Events");
+		QAMass[i]->GetXaxis()->CenterTitle();
+		QAMass[i]->GetYaxis()->CenterTitle();
+		QAMass[i]->GetXaxis()->SetTitleOffset(1.2);
+		QAMass[i]->GetYaxis()->SetTitleOffset(1.4);
+
+		QAMass[i]->SetMarkerStyle(20);
+		QAMass[i]->SetMarkerSize(1);		
+		QAMass[i]->SetLineColor(kBlack);
+		QAMass[i]->SetMarkerColor(kBlack);
+		QAMass[i]->SetMinimum(0);
 
 		//QA E
 		QAE[i] = (TH1D *) fin->Get(Form("QAE_%d",i));
@@ -748,12 +771,6 @@ void BRFinalAna(){
 
 
 
-
-		TLatex *lat = new TLatex();
-		lat->SetNDC();
-		lat->SetTextSize(0.1);
-
-
 		TLine* lPull = new TLine(-0.5, 0, 9.5, 0);
 		lPull->SetLineWidth(1);
 		lPull->SetLineStyle(2);
@@ -922,7 +939,7 @@ void BRFinalAna(){
 
 		c->cd();
 
-		func[i] = new TF1(Form("Func_%d",i),"[1] * TMath::Exp(-[0] * x)",0.01,0.04);
+		func[i] = new TF1(Form("Func_%d",i),"[1] * TMath::Exp(-[0] * x)",0.005,0.05);
 
 		LifeTime[i]->Fit(func[i],"R");
 		LifeTime[i]->Draw("ep");
@@ -948,6 +965,17 @@ void BRFinalAna(){
 		lat->DrawLatex(0.32,0.62,Form("PDG: c #tau = %.1f #pm %.1f (#mu m)",PDGcTau[i],PDGcTauErr[i]));
 
 		c->SaveAs(Form("Plots/%s/LifeTime.png",HFNameSave[i].Data()));
+
+		QAMass[i]->Draw("ep");
+
+		lat->SetTextSize(0.1);			
+		lat->DrawLatex(0.15,0.78,HFName[i].Data());
+		lat->SetTextSize(0.038);			
+		lat->DrawLatex(0.32,0.78,Form("Total Statistics: %d",TotalEvents[i]));
+
+		c->SaveAs(Form("Plots/%s/InvMass.png",HFNameSave[i].Data()));
+
+	
 
 		QAE[i]->Draw("ep");
 		float EnergyRMS = QAE[i]->GetRMS();
@@ -1025,8 +1053,73 @@ void BRFinalAna(){
 	HFHadronStat->GetXaxis()->SetLabelOffset(HFHadronStat->GetXaxis()->GetLabelOffset() * 3.2);
 
 	HFHadronStat->Draw("ep");
+	int AllEvents = 6500000;
+	int AllPart = HFHadronStat->Integral();
+	int AllAntiPart = HFAntiHadronStat->Integral();
+
+	lat->DrawLatex(0.32,0.78,Form("Total Number of Events: %d",AllEvents));
+
+
 	//HFHadronStat->Draw("text");
 	c->SaveAs("Plots/All/HFHadronStat.png");
+
+		
+	HFHadronStat->SetLineColor(kBlue);
+	HFHadronStat->SetMarkerColor(kBlue);
+	HFHadronStat->SetMarkerStyle(20);
+	HFHadronStat->SetMarkerSize(1);
+
+	HFAntiHadronStat->SetLineColor(kRed);
+	HFAntiHadronStat->SetMarkerColor(kRed);
+	HFAntiHadronStat->SetMarkerStyle(20);
+	HFAntiHadronStat->SetMarkerSize(1);
+	
+	HFHadronStat->Draw("ep");
+	HFAntiHadronStat->Draw("epSAME");
+	lat->DrawLatex(0.40,0.50,Form("Total Events: %d",AllEvents));
+	lat->DrawLatex(0.40,0.42,Form("Total Particles: %d",AllPart));
+	lat->DrawLatex(0.40,0.34,Form("Total Antiparticles: %d",AllAntiPart));
+
+
+	TLegend * legend =  new TLegend(0.40,0.60,0.80,0.75,NULL,"brNDC") ; 
+	legend->SetBorderSize(0);
+	legend->SetTextSize(0.045);
+	legend->SetTextFont(42);
+	legend->SetFillStyle(0);
+	legend->SetLineWidth(2);
+	
+	legend->AddEntry(HFHadronStat,"Particles" ,"PL");
+	legend->AddEntry(HFAntiHadronStat,"Antiparticles" ,"PL");
+
+	legend->Draw("SAME");
+	c->SaveAs("Plots/All/Abundance.png");
+
+
+
+	TH1D * PartAntiPartRatio = (TH1D *) HFHadronStat->Clone("PartAntiPartRatio");
+	PartAntiPartRatio->Divide(HFAntiHadronStat);
+
+		
+	PartAntiPartRatio->SetLineColor(kBlack);
+	PartAntiPartRatio->SetMarkerColor(kBlack);
+	PartAntiPartRatio->SetMarkerStyle(20);
+	PartAntiPartRatio->SetMarkerSize(1);
+
+	PartAntiPartRatio->SetMaximum(2.0);
+	PartAntiPartRatio->SetMinimum(0.0);
+
+	PartAntiPartRatio->Draw("ep");
+	lat->DrawLatex(0.20,0.84,Form("Total Number of Events: %d",AllEvents));
+		
+	TLine* lPull = new TLine(-0.5, 1, 8.5, 1);
+	lPull->SetLineWidth(1);
+	lPull->SetLineStyle(2);
+	lPull->SetLineColor(2);
+
+	lPull->Draw("SAME");
+
+	c->SaveAs("Plots/All/AbundanceRatio.png");
+
 
 	TH1D * HFEWidth = (TH1D *) HFHadronStat->Clone("HFEWidth");
 
