@@ -28,7 +28,7 @@ void BRFinalAna(){
 	lat->SetTextSize(0.1);
 
 
-	TString infile = "infiles/Charm.root";
+	TString infile = "NewInfile/All.root";
 
 
 	gStyle->SetOptStat(0);
@@ -39,10 +39,17 @@ void BRFinalAna(){
 	float Value;
 	float ValueError;
 
-	const int NHFQA = 9;
-	int QAVtxPDGID[NHFQA] = {411,421,431,4122,511,521,531,443,553};
-	TString HFName[NHFQA] = {"D^{+}","D^{0}","D^{+}_{s}","#Lambda_{c}^{+}","B^{0}","B^{+}","B^{0}_{s}","J/#psi","#Upsilon(1S)"};
-	TString HFNameSave[NHFQA] = {"D+","D0","Ds","LambdaC","B0","B+","Bs","Jpsi","Upsilon"};
+	const int NHFPart = 9;
+	const int NHFQA = 16;
+	//int QAVtxPDGID[NHFQA] = {411,421,431,4122,511,521,531,443,553};
+	int QAVtxPDGID[NHFQA] = {411, 421, 431, 4122, 511, 521, 531, 443, 553, -411, -421, -431, -4122, -511, -521, -531};
+	
+
+	TString HFHadronName[NHFPart] = {"D^{+}","D^{0}","D^{+}_{s}","#Lambda_{c}^{+}","B^{0}","B^{+}","B^{0}_{s}","J/#psi","#Upsilon(1S)"};
+	//TString HFAntiHadronName[NHFQA] = {"D^{+}","D^{0}","D^{+}_{s}","#Lambda_{c}^{+}","B^{0}","B^{+}","B^{0}_{s}","J/#psi","#Upsilon(1S)","D^{-}","#bar{D^{0}}","D^{-}_{s}","#bar{#Lambda_{c}^{+}}","#bar{B^{0}}","B^{-}","#bar{B^{0}_{s}}"};
+
+	TString HFName[NHFQA] = {"D^{+}","D^{0}","D^{+}_{s}","#Lambda_{c}^{+}","B^{0}","B^{+}","B^{0}_{s}","J/#psi","#Upsilon(1S)","D^{-}","#bar{D^{0}}","D^{-}_{s}","#bar{#Lambda_{c}^{+}}","#bar{B^{0}}","B^{-}","#bar{B^{0}_{s}}"};
+	TString HFNameSave[NHFQA] = {"D+","D0","Ds","LambdaC","B0","B+","Bs","Jpsi","Upsilon","D-","Anti-D0","Anti-Ds","Anti-LambdaC","Anti-B0","B-","Anti-Bs"};
 
 	float PDGcTau[NHFQA] = {1.040,0.4101,0.500,0.200,1.519,1.638,1.515,7.2/1000000000,1.21/100000000};
 	float PDGcTauErr[NHFQA] = {0.007,0.0015,0.007,0.006,0.004,0.004,0.004,0.1/1000000000.1/100000000};
@@ -51,13 +58,20 @@ void BRFinalAna(){
 
 	TString DecayChannelLabels[NHFQA][NChannels] = {{"#pi^{0}#pi^{+}","#pi^{+}#pi^{-}#pi^{+}","#pi^{+}#pi^{0}K^{0}_{S}","#pi^{+}#pi^{+}K^{-}","#pi^{+}#pi^{+}#pi^{+}#pi^{-}#pi^{-}","#pi^{+}#phi","#mu^{+}#nu_{#mu}","K^{+}K^{0}_{S}","e^{+}X","#phiX"}, //D+
 		{"#pi^{+}K^{-}","#pi^{+}#pi^{0}K^{-}","#pi^{-}K^{+}","K^{+}K^{-}K^{0}_{S}","3K^{0}_{S}","2#pi^{0}","#pi^{+}#pi^{-}","K^{0}_{S}X","#pi^{0}X","e^{+}X"}, //D0
-		{"#mu^{+}#nu_{#mu}#phi","#mu^{+}#nu_{#mu}","#pi^{+}K^{+}K^{-}","K^{+}K^{0}_{S}","2pi^{0}#pi^{+}","p #bar p","#pi^{+}#phi","K^{0}_{S}X","#phiX","e^{+}X"}, //Ds
+		{"#mu^{+}#nu_{#mu}#phi","#mu^{+}#nu_{#mu}","#pi^{+}K^{+}K^{-}","K^{+}K^{0}_{S}","2pi^{0}#pi^{+}","p #bar n","#pi^{+}#phi","K^{0}_{S}X","#phiX","e^{+}X"}, //Ds
 		{"pK^{-}#pi^{+}","pK^{0}_{S}","p#phi","p#pi^{0}#pi^{+}K^{-}","p#pi^{+}#pi^{-}#bar K^{0}","p#pi^{+}#pi^{-}#pi^{+}#pi^{-}","p#pi^{+}#pi^{-}","K^{+}K^{0}_{S}","e^{+}X","#phiX"}, //Lambda_C
-		{"K^{+}K^{-}#pi^{+}","K^{+}K^{-}K^{+}","K^{+}#phi","K^{+}J/#psi","K^{+} #bar D","D_{s}^{+} #bar D","K^{+}#bar K^{*0}(1430)","e #nu_{e} X","DX","J/#psiX"},  //B+
 		{"#pi^{-}K^{+}","#pi^{-}K^{+}#pi^{0}","#pi^{+}#pi^{-}","2#pi^{0}","D^{-}#pi^{+}","D^{-}D_{s}^{+}","J/#psiK^{+}#pi^{-}","J/#psi#pi^{+}#pi^{-}","DX","J/#psiX"}, //B0
+		{"K^{+}K^{-}#pi^{+}","K^{+}K^{-}K^{+}","K^{+}#phi","K^{+}J/#psi","K^{+} #bar D","D_{s}^{+} #bar D","K^{+}#bar K^{*0}(1430)","e^{+} #nu_{e} X","DX","J/#psiX"},  //B+																
 		{"#pi^{+}K^{-}","K^{+}K^{-}","p#bar pK^{+}K^{-}","#phi#gamma","D^{-} #pi^{+}","D_{s}^{+}D_{s}^{-}","J/#psiK^{+}K^{-}","J/#psi#phi","D_{s}^{-}X","J/#psiX"},  //Bs
 		{"e^{+}e^{-}","#mu^{+}#mu^{-}","#pi^{+}#pi^{-}","#pi^{+}#pi^{-}#pi^{0}","K^{+}K^{-}","K^{+}K^{-}#pi^{+}#pi^{-}","p #bar p","n #bar n","3#gamma","#gamma #pi^{0}"},  //Jpsi
-		{"e^{+}e^{-}","#mu^{+}#mu^{-}","#gamma#pi^{+}#pi^{-}","#pi^{+}#pi^{-}#pi^{0}","#gamma K^{+}K^{-}","#gamma2#pi^{0}","#phiK^{+}K^{-}","#pi^{+}#pi^{-}2pi^{0}","#gamma#pi^{+}#pi^{-}p #bar p","J/#psiX"}};  //Upsilon(1S)
+		{"e^{+}e^{-}","#mu^{+}#mu^{-}","#gamma#pi^{+}#pi^{-}","#pi^{+}#pi^{-}#pi^{0}","#gamma K^{+}K^{-}","#gamma2#pi^{0}","#phiK^{+}K^{-}","#pi^{+}#pi^{-}2pi^{0}","#gamma#pi^{+}#pi^{-}p #bar p","J/#psiX"}, //Upsilon(1S)
+		{"#pi^{0}#pi^{-}","#pi^{+}#pi^{-}#pi^{-}","#pi^{-}#pi^{0}K^{0}_{S}","#pi^{-}#pi^{-}K^{+}","#pi^{+}#pi^{+}#pi^{-}#pi^{-}#pi^{-}","#pi^{-}#phi","#mu^{-}#bar#nu_{#mu}","K^{-}K^{0}_{S}","e^{-}X","#phiX"}, //D-
+		{"#pi^{-}K^{+}","#pi^{-}#pi^{0}K^{+}","#pi^{+}K^{-}","K^{+}K^{-}K^{0}_{S}","3K^{0}_{S}","2#pi^{0}","#pi^{+}#pi^{-}","K^{0}_{S}X","#pi^{0}X","e^{-}X"}, //Anti-D0
+		{"#mu^{-}#bar#nu_{#mu}#phi","#mu^{-}#bar#nu_{#mu}","#pi^{-}K^{+}K^{-}","K^{-}K^{0}_{S}","2pi^{0}#pi^{-}","n #bar p","#pi^{-}#phi","K^{0}_{S}X","#phiX","e^{-}X"}, //Anti-Ds
+		{"pK^{+}#pi^{-}","#bar p K^{0}_{S}","#bar p#phi","#bar p#pi^{0}#pi^{-}K^{+}","#bar p #pi^{+}#pi^{-} K^{0}","#bar p#pi^{+}#pi^{-}#pi^{+}#pi^{-}","#bar p #pi^{+}#pi^{-}","K^{-}K^{0}_{S}","e^{-}X","#phiX"}, //Anti-Lambda_C
+		{"#pi^{+}K^{-}","#pi^{+}K^{-}#pi^{0}","#pi^{+}#pi^{-}","2#pi^{0}","D^{+}#pi^{-}","D^{+}D_{s}^{-}","J/#psi#pi^{+}K^{-}","J/#psi#pi^{+}#pi^{-}","DX","J/#psiX"}, //Anti-B0	
+		{"K^{+}K^{-}#pi^{-}","K^{+}K^{-}K^{-}","K^{-}#phi","K^{-}J/#psi","K^{-} bar D","D_{s}^{-} bar D","K^{-} K^{*0}(1430)","e^{-} #bar #nu_{e} X","DX","J/#psiX"},  //B-
+		{"#pi^{-}K^{+}","K^{+}K^{-}","p#bar pK^{+}K^{-}","#phi#gamma","D^{+} #pi^{-}","D_{s}^{+}D_{s}^{-}","J/#psiK^{+}K^{-}","J/#psi#phi","D_{s}^{+}X","J/#psiX"}};  //Anti-Bs
 
 
 
@@ -108,6 +122,8 @@ void BRFinalAna(){
 	TH1D * QAPz[NHFQA];
 	TH1D * QACosTheta[NHFQA];
 
+	int TotalBR[NHFQA]; 
+	float TotalStat[NHFQA];
 
 
 	for(int i = 0; i < NHFQA; i++){
@@ -244,7 +260,7 @@ void BRFinalAna(){
 		EvtGenBR[i]->SetMarkerColor(kRed);
 
 		EvtGenBR[i]->SetMaximum(1.5);
-		EvtGenBR[i]->SetMinimum(5e-04);
+		EvtGenBR[i]->SetMinimum(5e-07);
 
 
 
@@ -266,7 +282,7 @@ void BRFinalAna(){
 		EvtGenEncoded[i]->SetLineColor(kGreen);
 		EvtGenEncoded[i]->SetMarkerColor(kGreen);
 		EvtGenEncoded[i]->SetMaximum(1.6);
-		EvtGenEncoded[i]->SetMinimum(5e-04);
+		EvtGenEncoded[i]->SetMinimum(5e-07);
 
 
 
@@ -289,7 +305,7 @@ void BRFinalAna(){
 		PDGBR[i]->SetLineColor(kBlue);
 		PDGBR[i]->SetMarkerColor(kBlue);
 		PDGBR[i]->SetMaximum(1.6);
-		PDGBR[i]->SetMinimum(5e-04);
+		PDGBR[i]->SetMinimum(5e-07);
 
 
 
@@ -465,10 +481,7 @@ void BRFinalAna(){
 
 		/*
 		   Decay Channel Explanations
-
-
 		   D+
-
 		   0. Decay D+ -> pi0 pi+ with all intermediate resonances 
 		   1. Decay D+ -> pi+ pi- pi+ with all intermediate resonances 
 		   2. Decay D+ -> pi+ pi0 K0s 
@@ -479,9 +492,7 @@ void BRFinalAna(){
 		   7. Decay D+ -> K+ K0s 
 		   8. Decay D+ -> e+ + X
 		   9. Decay D+ -> phi + X
-
 		   D0
-
 		   0. Decay D0 -> pi+ K- with all intermediate resonances 
 		   1. Decay D0 -> pi+ pi0 K-  
 		   2. Decay D0 -> pi- K+ with all intermediate resonances 
@@ -492,10 +503,7 @@ void BRFinalAna(){
 		   7. Decay D0 -> K0s + X
 		   8. Decay D0 -> pi0 + X
 		   9. Decay D0 -> e+ + X
-
-
 		   Ds+
-
 		   0. Decay Ds+ -> mu+ v_mu phi 
 		   1. Decay Ds+ -> mu+ v_mu 
 		   2. Decay Ds+ -> pi+ K+ K-  
@@ -506,11 +514,7 @@ void BRFinalAna(){
 		   7. Decay Ds+ -> Ks + X
 		   8. Decay Ds+ -> phi + X
 		   9. Decay Ds+ -> e+ + X
-
-
-
 		   LambdaC+
-
 		   0. Decay LambdaC+ -> p K- pi+ 
 		   1. Decay LambdaC+ -> p K0 bar
 		   2. Decay LambdaC+ -> p phi  
@@ -521,9 +525,7 @@ void BRFinalAna(){
 		   7. Decay LambdaC+ -> K0bar + X
 		   8. Decay LambdaC+ -> p + X
 		   9. Decay LambdaC+ -> e+ + X
-
 		   B0
-
 		   0. Decay B0 -> pi- K+ with all intermediate resonances 
 		   1. Decay B0 -> pi- K+ pi0 with all intermediate resonances 
 		   2. Decay B0 -> pi+ pi- 
@@ -534,9 +536,7 @@ void BRFinalAna(){
 		   7. Decay B0 -> Jpsi pi+ pi-
 		   8. Decay B0 -> D + X
 		   9. Decay B0 -> Jpsi + X 
-
 		B+
-
 			0. Decay B+ -> K+ K- pi+ with all intermediate resonances 
 			1. Decay B+ -> K+ K- K+ with all intermediate resonances 
 			2. Decay B+ -> K+ phi(1020) 
@@ -547,11 +547,7 @@ void BRFinalAna(){
 			7. Decay B+ -> e ve X
 			8. Decay B+ -> D + X
 			9. Decay B+ -> Jpsi + X
-
-
-
 			Bs0
-
 			0. Decay Bs -> pi+ K-
 			1. Decay Bs -> K+ K- 
 			2. Decay Bs -> p bar p K+ K-
@@ -562,10 +558,7 @@ void BRFinalAna(){
 			7. Decay Bs -> Jpsi phi
 			8. Decay Bs -> Ds- + X
 			9. Decay Bs -> Jpsi + X
-
-
 			Jpsi
-
 			0. Decay Jpsi -> e+ e- 
 			1. Decay Jpsi -> mu+ mu-
 			2. Decay Jpsi -> pi+ pi-
@@ -576,10 +569,7 @@ void BRFinalAna(){
 			7. Decay Jpsi -> n bar n
 			8. Decay Jpsi -> gamma gamma gamma
 			9. Decay Jpsi -> gamma pi0
-
-
 			Upsilon(1S)
-
 			0. Decay Upsilon -> e+ e- 
 			1. Decay Upsilon -> mu+ mu-
 			2. Decay Upsilon -> gamma pi+ pi-
@@ -590,8 +580,6 @@ void BRFinalAna(){
 			7. Decay Upsilon -> pi+ pi- pi0	pi0
 			8. Decay Upsilon -> gamma pi+ pi- p+ p-
 			9. Decay Upsilon -> Jpsi + X
-
-
 			*/
 			//  {0.001247,0.00327,0.01562,0.0983,0.00570,0.00169,0,0.1607,0.0112,0.063}
 			//  {0.00033,0.00018,0.00031,0.0016,0.00014,0.00011,0,0.003,0.0004,0.007}
@@ -606,7 +594,6 @@ void BRFinalAna(){
 
 			/*
 			   Upsilon 
-
 			   0. Decay Upsilon -> e+ e- 
 			   1. Decay Upsilon -> mu+ mu-
 			   2. Decay Upsilon -> gamma pi+ pi-
@@ -617,8 +604,6 @@ void BRFinalAna(){
 			   7. Decay Upsilon -> pi+ pi- pi0	pi0
 			   8. Decay Upsilon -> gamma pi+ pi- p+ p-
 			   9. Decay Upsilon -> Jpsi + X
-
-
 */
 			cout << "Pass 1" << endl;
 
@@ -631,7 +616,14 @@ void BRFinalAna(){
 			{5.2e-06,4.88e-05,8.8e-06,0.00102,3.69e-04,0.009,3.8e-07,0.108,0.95,0.01}, //B+ 
 			{2.2e-06,2.66e-05,1.85e-05,3.4e-05,2.98e-03,4.4e-03,7.9e-04,1.04e-03,0.62,0.0192},   //Bs
 			{0.05971,0.05961,1.47e-04,0.0210,2.88e-03,6.86e-03,2.120e-03,2.09e-03,1.16e-05,3.56e-05},   //Jpsi
-			{0.0238,0.0248,6.3e-05,2.1e-06,1.14e-05,1.7e-05,2.4e-06,1.28e-05,1.5e-04,5.4e-04}    //Upsilon(1S)
+			{0.0238,0.0248,6.3e-05,2.1e-06,1.14e-05,1.7e-05,2.4e-06,1.28e-05,1.5e-04,5.4e-04},    //Upsilon(1S)
+			{0.001247,0.00327,0.0736,0.0938,0.00570,0.00166,3.74e-04,0.00304,0.1607,0.0112},    //D-
+			{0.03947,0.0164,0.000150,0.00442,7.5e-04,8.26e-04,0.00515,0.3,0.2,0.0649},  //Anti-D0 
+			{0.019,0.00543,0.0538,0.01453,0.0168,0.00122,0.045,0.190,0.157,0.0633},  //Anti-Ds
+			{0.0628,0.0159,0.00106,0.000111,0.00010,0.0182,0.00461,0.099,0.50,0.0395},   //Anti-LambdaC
+			{1.96e-05,3.78e-05,5.12e-06,1.59e-06,2.51e-03,7.2e-03,1.15e-03,4.00e-05,1.027,0.0192},   //Anti-B0
+			{5.2e-06,4.88e-05,8.8e-06,0.00102,3.69e-04,0.009,3.8e-07,0.108,0.95,0.01}, //B0 
+			{2.2e-06,2.66e-05,1.85e-05,3.4e-05,2.98e-03,4.4e-03,7.9e-04,1.04e-03,0.62,0.0192}   //Anti-Bs
 		};  
 
 
@@ -644,14 +636,19 @@ void BRFinalAna(){
 			{0.4e-06,3.24293e-05,0.65e-06,0.000019,0.16e-04,0.0009,1.3e-07,0.004,0.002,.002},   //B+
 			{0.7e-06,0.22e-05,0.14e-05,0.4e-05,0.14e-03,0.5e-03,0.7e-04,0.04e-03,0.06,0.002},   //Bs
 			{0.032,0.033,0.14e-04,0.0008,0.12e-03,0.28e-03,0.029e-03,0.16e-03,0.22e-05,0.17e-05},   //Jpsi
-			{0.0011,0.0005,1.8e-05,0.8e-06,0.13e-05,0.7e-05,0.5e-06,0.30e-05,0.6e-04,0.4e-04}     //Upsilon(1S)
+			{0.0011,0.0005,1.8e-05,0.8e-06,0.13e-05,0.7e-05,0.5e-06,0.30e-05,0.6e-04,0.4e-04},     //Upsilon(1S)
+			{0.00033,0.00018,0.0021,0.0016,0.00014,0.00016,0.17e-04,0.00009,0.003,0.0004},   //D- 
+			{0.00030,0.0050,0.000007,0.00032,0.7e-04,0.25e-04,0.000024,0.01,0.005,0.0011},  //Anti-D0
+			{0.005,0.00015,0.0010,0.0035,0.0009,0.00011,0.004,0.011,0.010,0.0015},   //Anti-Ds
+			{0.0032,0.0008,0.00014,0.000018,0.00004,0.0025,0.00028,0.0070,0.16,0.0035},   //Anti-LambdaC
+			{0.05e-05,0.32e-05,0.19e-06,0.26e-06,0.08e-03,0.8e-03,0.05e-03,0.15e-05,0.010,0.002},   //Anti-B0
+			{0.4e-06,3.24293e-05,0.65e-06,0.000019,0.16e-04,0.0009,1.3e-07,0.004,0.002,.002},   //B-
+			{0.7e-06,0.22e-05,0.14e-05,0.4e-05,0.14e-03,0.5e-03,0.7e-04,0.04e-03,0.06,0.002},   //Anti-Bs
+
 		}; 
 
 		/*
-
 		   Upsilon(1S)
-
-
 		   0. Decay Upsilon -> e+ e- 
 		   1. Decay Upsilon -> mu+ mu-
 		   2. Decay Upsilon -> gamma pi+ pi-
@@ -673,7 +670,15 @@ void BRFinalAna(){
 			{0.000005000,0.000025400,0.000008300,0.001014000,0.000368000,0.010000000,0.000001,0.108,1.09,0.0192},   //B+
 			{0.0000049,0.000033,0.000014,0.000057,0.00320,0.0104,0.0007,0.00130,0.1144,0.0265},   //Bs
 			{0.05940,0.05930,0.000147,0.02070,0.000237000,0.0003400,0.002170,0.00220,0.000012,0.0000349},   //Jpsi
-			{0.024800,0.024800,0.0000630,2.1e-06,0.0000114,0.0000170,0.014959973,1.28e-05,0.000250000,0.044879919}    //Upsilon(1S)
+			{0.024800,0.024800,0.0000630,2.1e-06,0.0000114,0.0000170,0.014959973,1.28e-05,0.000250000,0.044879919},    //Upsilon(1S)
+			{0.00126,0.00244,0.0699,0.09400,0.001660,0.004660214,0.000382,0.00286,0.16313194,0.027660214},   //D-
+			{0.0389,0.1390,0.00013745,0.00465,0.00095,0.0008,0.001397,0.1529059,0.37957735,0.0651},   //Anti-D0
+			{0.018309605,0.005800000,0.003811325,0.01490,0.0065,0.00130,0.04500,0.02944,0.19589603,0.06432038},   //Anti-Ds-
+			{0.0254,0.0230,0.00082,0.02300,0.02600,0.00180,0.0007,0.10370,0.20462,0.0480},   //Anti-LambdaC 
+			{0.0000194,0.0000275,0.00000513,0.00000162,0.002680,0.00720,0.00133,0.0000270,0.108,0.0071881},   //Anti-B0
+			{0.000005000,0.000025400,0.000008300,0.001014000,0.000368000,0.010000000,0.000001,0.108,1.09,0.0192},   //B-
+			{0.0000049,0.000033,0.000014,0.000057,0.00320,0.0104,0.0007,0.00130,0.1144,0.0265},   //Anti-Bs
+
 		};
 
 
@@ -695,7 +700,6 @@ void BRFinalAna(){
 
 
 		float ChannelStat;
-		float TotalStat;
 		float BR;
 
 
@@ -716,22 +720,30 @@ void BRFinalAna(){
 		float Dev3Err;
 
 
-		TotalEvents[i] = HFHadronStat->GetBinContent(i+1);		
+	
+		if(i < 9) TotalEvents[i] = HFHadronStat->GetBinContent(i+1);
+		if(i > 8) TotalEvents[i] = HFAntiHadronStat->GetBinContent(i-8);
 
 		cout << "Pass 2" << endl;
 
 
 		BR1DHis[i] = (TH1D *) fin->Get(Form("BR1DHis_%d",i));
-		TotalStat = HFHadronStat->GetBinContent(i+1);
+	
+		if(i < 9) TotalStat[i] = HFHadronStat->GetBinContent(i+1);
+		if(i > 8) TotalStat[i] = HFAntiHadronStat->GetBinContent(i-8);
 
-		//		cout << "TotalStat = " << TotalStat << endl;
+		TotalBR[i] = BR1DHis[i]->Integral();
+
+
 		for(int j = 0; j < NChannel; j++){
 
 			ChannelStat = BR1DHis[i]->GetBinContent(j+1);
 			ChannelStatErr = BR1DHis[i]->GetBinError(j+1);
-			BR = ChannelStat/TotalStat;
-			BRErr = ChannelStatErr/TotalStat;
+			BR = ChannelStat/TotalStat[i];
+			BRErr = ChannelStatErr/TotalStat[i];
 
+			if(BR == 0) cout << "HF Hadron: " << HFNameSave[i] << "    Channel: " << j << endl;
+		
 			EvtGenBR[i]->SetBinContent(j+1,BR);
 			EvtGenBR[i]->SetBinError(j+1,BRErr);
 
@@ -760,7 +772,7 @@ void BRFinalAna(){
 
 
 			//	if(i == PartID) cout << "Dev = " << Dev << endl;
-			if(i == 2) cout << "Dev2 = " << Dev2 << endl;
+//			if(i == 2) cout << "Dev2 = " << Dev2 << endl;
 
 		}
 
@@ -1032,7 +1044,7 @@ void BRFinalAna(){
 
 
 	//Redefintion of Axis//
-	for(int r = 0; r < NHFQA; r++){
+	for(int r = 0; r < NHFPart; r++){
 
 		Value = HFHadronStat->GetBinContent(r+1);
 		ValueError = HFHadronStat->GetBinError(r+1);
@@ -1073,7 +1085,9 @@ void BRFinalAna(){
 	HFAntiHadronStat->SetMarkerColor(kRed);
 	HFAntiHadronStat->SetMarkerStyle(20);
 	HFAntiHadronStat->SetMarkerSize(1);
-	
+
+	HFHadronStat->SetMinimum(0);
+
 	HFHadronStat->Draw("ep");
 	HFAntiHadronStat->Draw("epSAME");
 	lat->DrawLatex(0.40,0.50,Form("Total Events: %d",AllEvents));
@@ -1136,4 +1150,12 @@ void BRFinalAna(){
 
 	HFEWidth->Draw("hist");
 	c->SaveAs("Plots/All/HFEWidth.png");
+
+	for(int i = 0; i < NHFQA;i++){
+
+				
+		cout << "i = " << i << "  TotalStat = " << TotalStat[i] << "	TotalBR[i] = " << 	TotalBR[i]  << endl;
+
+	}
+
 }
